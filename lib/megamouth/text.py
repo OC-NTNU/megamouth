@@ -52,6 +52,7 @@ def get_text(core, doi, fields, hash_tags, resume, solr_url, text_dir):
 def get_texts(doi_files, solr_url, fields, text_dir, hash_tags=[],
               resume=False):
     for doi_fname in file_list(doi_files):
+        log.info('getting text sources from {!r}'.format(doi_fname))
         for line in open(doi_fname):
             try:
                 core, doi = line.split()
