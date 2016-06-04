@@ -39,14 +39,26 @@ def get_text(core, doi, fields, hash_tags, resume, solr_url, text_dir):
         log.info('skipping file {!r} because it exists'.format(text_path))
     else:
         doc = query_solr(solr_url, core, doi, fields)
-        # flatten list values, e.g. for fulltext
-        values = ('\n'.join(doc[key]) if isinstance(doc[key], list)
-                  else doc[key]
-                  for key in fields)
+        values = []
+        for key in fields:
+            try:
+                val = doc[key]
+            except KeyError as key:
+                log.error('no {!r} field for doi {!r}'.format(key.args[0], doi))
+                return
+            # flatten list values, e.g. for fulltext
+            if isinstance(val, list):
+                values.append('\n'.join(val))
+            else:
+                values.append(val)
         text = '\n\n'.join(values)
-        make_dir(out_dir)
         log.info('creating text file {!r}'.format(text_path))
-        open(text_path, 'w').write(text)
+        try:
+            open(text_path, 'w').write(text)
+        except:
+            make_dir(out_dir)
+            open(text_path, 'w').write(text)
+
 
 
 def get_texts(doi_files, solr_url, fields, text_dir, hash_tags=[],
