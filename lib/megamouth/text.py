@@ -60,9 +60,10 @@ def get_text(core, doi, fields, hash_tags, resume, solr_url, text_dir):
             open(text_path, 'w').write(text)
 
 
-
 def get_texts(doi_files, solr_url, fields, text_dir, hash_tags=[],
-              resume=False):
+              resume=False, max_n=None):
+    n = 0
+
     for doi_fname in file_list(doi_files):
         log.info('getting text sources from {!r}'.format(doi_fname))
         for line in open(doi_fname):
@@ -71,9 +72,13 @@ def get_texts(doi_files, solr_url, fields, text_dir, hash_tags=[],
             except:
                 log.error('ill-formed line in file {!r}:\n'
                           '{}'.format(doi_fname, line))
-            else:
-                get_text(core, doi, fields, hash_tags, resume, solr_url,
-                         text_dir)
+                continue
+
+            get_text(core, doi, fields, hash_tags, resume, solr_url, text_dir)
+            n += 1
+            if n == max_n:
+                log.info('reached max_n={}'.format(n))
+                break
 
 
 def get_full_text(doi_files, solr_url, text_dir, hash_tags=['full'],
@@ -83,7 +88,7 @@ def get_full_text(doi_files, solr_url, text_dir, hash_tags=['full'],
 
 
 def get_abs_text(doi_files, solr_url, text_dir, hash_tags=['abs'],
-                 resume=False):
+                 resume=False, max_n=None):
     """
     get text of abstracts
 
@@ -95,4 +100,4 @@ def get_abs_text(doi_files, solr_url, text_dir, hash_tags=['abs'],
     :return:
     """
     get_texts(doi_files, solr_url, ['title', 'abstract'], text_dir,
-              hash_tags=hash_tags, resume=resume)
+              hash_tags=hash_tags, resume=resume, max_n=max_n)
