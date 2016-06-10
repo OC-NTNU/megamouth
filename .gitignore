@@ -2,3 +2,4 @@
 local/
 sources/
 local.ini
+*/cache/*

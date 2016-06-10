@@ -1,6 +1,6 @@
 import requests
 import logging
-from os import path
+from path import Path
 
 from baleen.utils import file_list, make_dir
 
@@ -32,10 +32,9 @@ def query_solr(solr_url, core, doi, fields=[]):
 def get_text(core, doi, fields, hash_tags, resume, solr_url, text_dir):
     prefix, suffix = doi.split('/')
     text_fname = '#'.join([prefix, suffix] + hash_tags) + '.txt'
-    out_dir = path.join(text_dir, prefix)
-    text_path = path.join(out_dir, text_fname)
+    text_path = Path(text_dir) / text_fname
 
-    if resume and path.exists(text_path):
+    if resume and text_path.exists() :
         log.info('skipping file {!r} because it exists'.format(text_path))
     else:
         doc = query_solr(solr_url, core, doi, fields)
@@ -53,15 +52,12 @@ def get_text(core, doi, fields, hash_tags, resume, solr_url, text_dir):
                 values.append(val)
         text = '\n\n'.join(values)
         log.info('creating text file {!r}'.format(text_path))
-        try:
-            open(text_path, 'w').write(text)
-        except:
-            make_dir(out_dir)
-            open(text_path, 'w').write(text)
+        text_path.write_text(text)
 
 
 def get_texts(doi_files, solr_url, fields, text_dir, hash_tags=[],
               resume=False, max_n=None):
+    Path(text_dir).makedirs_p()
     n = 0
 
     for doi_fname in file_list(doi_files):
