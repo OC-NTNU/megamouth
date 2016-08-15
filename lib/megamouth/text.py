@@ -119,6 +119,10 @@ def get_solr_sources(xml_files, in_dir):
             core = 'nature-art'
         elif name.startswith('wiley'):
             core = 'wiley-art'
+        elif name.startswith('springer'):
+            core = 'springer-art'
+        else:
+            raise ValueError('undefined core for file ' + xml_file)
 
         tsv_file = in_dir + '/' + Path(xml_file).name + '.tsv'
 
