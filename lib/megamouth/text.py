@@ -47,7 +47,7 @@ def get_text(core, doi, fields, hash_tags, resume, solr_url, text_dir):
             try:
                 val = doc[key]
             except KeyError as key:
-                log.error('no {!r} field for doi {!r}'.format(key.args[0], doi))
+                log.error('no {!r} field for doi {!r} in core {!r}'.format(key.args[0], doi, core))
                 return
             # flatten list values, e.g. for fulltext
             if isinstance(val, list):
