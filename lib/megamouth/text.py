@@ -97,3 +97,37 @@ def get_abs_text(doi_files, solr_url, text_dir, hash_tags=['abs'],
     """
     get_texts(doi_files, solr_url, ['title', 'abstract'], text_dir,
               hash_tags=hash_tags, resume=resume, max_n=max_n)
+
+
+
+
+def get_solr_sources(xml_files, in_dir):
+    '''
+    Convert output of IR step (article sources in XMl format)
+    to Megamouth input files (tab-separated text file where each line contains
+    the name of a Solr core and the DOI of a source article).
+    '''
+    in_dir = Path(in_dir)
+    in_dir.makedirs_p()
+
+    for xml_file in file_list(xml_files):
+        name =  Path(xml_file).name
+        # arbitrary mapping from filenames to Solr cores
+        if name.startswith('elsevier'):
+            core = 'data-scientific'
+        elif name.startswith('macmillan'):
+            core = 'nature-art'
+        elif name.startswith('wiley'):
+            core = 'wiley-art'
+
+        tsv_file = in_dir + '/' + Path(xml_file).name + '.tsv'
+
+        # XML is ill-formed (incomplete entities etc.)
+        # so do not use an XML parser
+        with open(xml_file) as inf, open(tsv_file, 'w') as outf:
+            log.info('creating ' + tsv_file)
+
+            for line in inf:
+                if line.lstrip().startswith('<doi>'):
+                    doi = '/'.join(line.split('<')[-2].split('/')[-2:])
+                    print(core, doi, sep='\t', file=outf)

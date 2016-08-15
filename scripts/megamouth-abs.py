@@ -7,7 +7,7 @@ run processes to create Nature full corpus
 from baleen.pipeline import script
 from baleen.steps import *
 
-from megamouth.steps import get_abs
+from megamouth.steps import get_abs, get_inp
 
 script(steps=[get_abs,
               core_nlp,
@@ -21,8 +21,10 @@ script(steps=[get_abs,
               toneo,
               ppgraph,
               add_cit],
-       optional=[remove_server,
+       optional=[get_inp,
+                 remove_server,
                  start_server,
-                 stop_server, clean],
+                 stop_server,
+                 clean],
        default_cfg_fnames=['megamouth.ini', 'local.ini'],
        default_section='ABS')
