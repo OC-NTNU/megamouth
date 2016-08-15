@@ -10,6 +10,9 @@ log = logging.getLogger(__name__)
 logging.getLogger("requests.packages.urllib3.connectionpool").setLevel(
     logging.WARNING)
 
+class DOIError(Exception):
+    pass
+
 
 def query_solr(solr_url, core, doi, fields=[]):
     url = '/'.join([solr_url.rstrip('/'), core, 'select'])
@@ -27,6 +30,7 @@ def query_solr(solr_url, core, doi, fields=[]):
         return json['response']['docs'][0]
     else:
         log.error('DOI {!r} not found in core {!r}'.format(doi, core))
+        raise DOIError()
 
 
 def get_text(core, doi, fields, hash_tags, resume, solr_url, text_dir):
@@ -70,7 +74,11 @@ def get_texts(doi_files, solr_url, fields, text_dir, hash_tags=[],
                           '{}'.format(doi_fname, line))
                 continue
 
-            get_text(core, doi, fields, hash_tags, resume, solr_url, text_dir)
+            try:
+                get_text(core, doi, fields, hash_tags, resume, solr_url, text_dir)
+            except DOIError:
+                continue
+
             n += 1
             if n == max_n:
                 log.info('reached max_n={}'.format(n))
