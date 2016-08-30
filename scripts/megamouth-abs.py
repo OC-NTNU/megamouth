@@ -26,6 +26,7 @@ script(steps=[get_abs,
                  remove_server,
                  start_server,
                  stop_server,
-                 clean],
+                 clean,
+                 clean_cache],
        default_cfg_fnames=['megamouth.ini', 'local.ini'],
        default_section='ABS')
