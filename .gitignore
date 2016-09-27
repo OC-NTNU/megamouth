@@ -3,3 +3,6 @@ local/
 sources/
 local.ini
 */cache/*
+*.tbz
+*.tgz
+*.zip

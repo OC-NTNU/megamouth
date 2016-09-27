@@ -8,6 +8,7 @@
       <sourceFolder url="file://$MODULE_DIR$/lib" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/data" />
       <excludeFolder url="file://$MODULE_DIR$/local" />
+      <excludeFolder url="file://$MODULE_DIR$/ocean-local" />
       <excludeFolder url="file://$MODULE_DIR$/sources" />
       <excludeFolder url="file://$MODULE_DIR$/tmp" />
     </content>
