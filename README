@@ -1,2 +1,50 @@
+Megamouth
 
 large-scale text mining of marine science literature
+
+https://github.com/OC-NTNU/megamouth
+
+Copyright Erwin Marsi
+2016
+
+
+
+--------------------------------------------------------------------------------
+Requirements
+--------------------------------------------------------------------------------
+
+baleen-python and all its dependencies
+
+
+--------------------------------------------------------------------------------
+Setup
+--------------------------------------------------------------------------------
+
+1. Install baleen-python (including all of its dependencies) and activate it
+   (megamouth uses the same virtual Python environment as baleen-python).
+   See https://github.com/OC-NTNU/baleen-python
+
+
+2. Clone git repos
+
+	$ git clone https://github.com/OC-NTNU/megamouth.git
+
+
+3. Setup Megamouth environment with
+
+    $ source setup_env.sh
+
+
+4. Copy scripts/local-sample.ini to scripts/local.ini.
+   Modify the paths in local.ini acording to your local setup.
+
+
+
+--------------------------------------------------------------------------------
+Run
+--------------------------------------------------------------------------------
+
+	$ cd scripts
+	$ ./megamouth-abs.py run-all
+
+

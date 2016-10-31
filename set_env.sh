@@ -1,2 +1,7 @@
-source activate megamouth
-export PYTHONPATH=$PYTHONPATH:/Users/work/Projects/OCEAN-CERTAIN/code/python/baleen-python/lib:/Users/work/Projects/OCEAN-CERTAIN/megamouth/lib
+# To setup a local environment for Megamouth, execute command
+#
+#    source set_env.sh
+#
+MEGAMOUTH_HOME="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+export PYTHONPATH=$PYTHONPATH:$MEGAMOUTH_HOME/lib
+
