@@ -23,14 +23,26 @@ def query_solr(solr_url, core, doi, fields=[]):
         params['fl'] = ','.join(f for f in fields)
 
     response = requests.get(url, params)
-
     json = response.json()
 
     if json['response']['docs']:
         return json['response']['docs'][0]
-    else:
-        log.error('DOI {!r} not found in core {!r}'.format(doi, core))
-        raise DOIError()
+
+    # TODO: remove hack
+    #  *** HACK ***
+    # Doi field in Solr records sometimes contains the url to resolve the doi,
+    # e.g. http://dx.doi.org/10.1007/s13762-014-0657-1
+    # So we try again with the url...
+    params['q'] = 'doi:"http://dx.doi.org/{}"'.format(doi),
+
+    response = requests.get(url, params)
+    json = response.json()
+
+    if json['response']['docs']:
+        return json['response']['docs'][0]
+
+    log.error('DOI {!r} not found in core {!r}'.format(doi, core))
+    raise DOIError()
 
 
 def get_text(core, doi, fields, hash_tags, resume, solr_url, text_dir):
