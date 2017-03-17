@@ -2,6 +2,6 @@
 #
 #    source set_env.sh
 #
-MEGAMOUTH_HOME="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+export MEGAMOUTH_HOME="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 export PYTHONPATH=$PYTHONPATH:$MEGAMOUTH_HOME/lib
 
