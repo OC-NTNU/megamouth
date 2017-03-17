@@ -122,13 +122,13 @@ def get_solr_sources(xml_files, in_dir):
         name =  Path(xml_file).name
         # arbitrary mapping from filenames to Solr cores
         if name.startswith('elsevier'):
-            core = 'data-scientific'
+            core = 'oc-elsevier-art'
         elif name.startswith('macmillan'):
-            core = 'nature-art'
+            core = 'oc-macmillan-art'
         elif name.startswith('wiley'):
-            core = 'wiley-art'
+            core = 'oc-wiley-art'
         elif name.startswith('springer'):
-            core = 'springer-art'
+            core = 'oc-springer-art'
         else:
             raise ValueError('undefined core for file ' + xml_file)
 
