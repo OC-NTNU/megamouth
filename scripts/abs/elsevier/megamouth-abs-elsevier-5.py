@@ -1,8 +1,10 @@
 #!/usr/bin/env python
 
 """
-run processes to create Nature full corpus
+process Elsevier abstracts 5
 """
+
+from os import getenv
 
 from baleen.pipeline import script
 from baleen.steps import *
@@ -16,22 +18,26 @@ script(steps=[get_abs,
               offsets,
               prep_vars,
               prune_vars,
-              tocsv,
-              setup_server,
-              toneo,
-              ppgraph,
               tag_trees,
               ext_rels,
-              add_rels,
-              add_cit,
-              add_meta],
+              arts2csv,
+              vars2csv,
+              rels2csv],
        optional=[get_inp,
                  remove_server,
                  start_server,
                  stop_server,
+                 add_cit,
+                 add_meta,
                  clean,
                  clean_cache,
                  report,
-                 tag_trees],
-       default_cfg_fnames=['megamouth.ini', 'local.ini'],
+                 tag_trees,
+                 setup_server,
+                 toneo,
+                 ppgraph],
+       default_cfg_fnames=[
+           getenv('MEGAMOUTH_HOME') + '/scripts/megamouth.ini',
+           getenv('MEGAMOUTH_HOME') + '/scripts/local.ini',
+           getenv('MEGAMOUTH_HOME') + '/scripts/abs/elsevier/megamouth-abs-elsevier-5.ini'],
        default_section='ABS')

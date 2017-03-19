@@ -2,7 +2,7 @@ import requests
 import logging
 from path import Path
 
-from baleen.utils import file_list, make_dir
+from baleen.utils import file_list, quote_doi, derive_path
 
 log = logging.getLogger(__name__)
 
@@ -23,20 +23,33 @@ def query_solr(solr_url, core, doi, fields=[]):
         params['fl'] = ','.join(f for f in fields)
 
     response = requests.get(url, params)
-
     json = response.json()
 
     if json['response']['docs']:
         return json['response']['docs'][0]
-    else:
-        log.error('DOI {!r} not found in core {!r}'.format(doi, core))
-        raise DOIError()
+
+    # TODO: remove hack
+    #  *** HACK ***
+    # Doi field in Solr records sometimes contains the url to resolve the doi,
+    # e.g. http://dx.doi.org/10.1007/s13762-014-0657-1
+    # So we try again with the url...
+    params['q'] = 'doi:"http://dx.doi.org/{}"'.format(doi),
+
+    response = requests.get(url, params)
+    json = response.json()
+
+    if json['response']['docs']:
+        return json['response']['docs'][0]
+
+    log.error('DOI {!r} not found in core {!r}'.format(doi, core))
+    raise DOIError()
 
 
 def get_text(core, doi, fields, hash_tags, resume, solr_url, text_dir):
-    prefix, suffix = doi.split('/')
-    text_fname = '#'.join([prefix, suffix] + hash_tags) + '.txt'
-    text_path = Path(text_dir) / text_fname
+    if doi.startswith('http://dx.doi.org/'):
+        doi = doi[18:]
+    quoted_doi = quote_doi(doi)
+    text_path = derive_path('', new_dir=text_dir, new_corename=quoted_doi, new_ext='txt', append_tags=hash_tags)
 
     if resume and text_path.exists() :
         log.info('skipping file {!r} because it exists'.format(text_path))
@@ -122,13 +135,13 @@ def get_solr_sources(xml_files, in_dir):
         name =  Path(xml_file).name
         # arbitrary mapping from filenames to Solr cores
         if name.startswith('elsevier'):
-            core = 'data-scientific'
+            core = 'oc-elsevier-art'
         elif name.startswith('macmillan'):
-            core = 'nature-art'
+            core = 'oc-macmillan-art'
         elif name.startswith('wiley'):
-            core = 'wiley-art'
+            core = 'oc-wiley-art'
         elif name.startswith('springer'):
-            core = 'springer-art'
+            core = 'oc-springer-art'
         else:
             raise ValueError('undefined core for file ' + xml_file)
 
