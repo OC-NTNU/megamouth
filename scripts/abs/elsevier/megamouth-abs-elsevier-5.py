@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 """
-process Elsevier abstracts
+process Elsevier abstracts 5
 """
 
 from os import getenv
@@ -39,5 +39,5 @@ script(steps=[get_abs,
        default_cfg_fnames=[
            getenv('MEGAMOUTH_HOME') + '/scripts/megamouth.ini',
            getenv('MEGAMOUTH_HOME') + '/scripts/local.ini',
-           getenv('MEGAMOUTH_HOME') + '/scripts/abs/elsevier/megamouth-abs-elsevier.ini'],
+           getenv('MEGAMOUTH_HOME') + '/scripts/abs/elsevier/megamouth-abs-elsevier-5.ini'],
        default_section='ABS')
