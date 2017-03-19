@@ -2,7 +2,7 @@ import requests
 import logging
 from path import Path
 
-from baleen.utils import file_list, make_dir
+from baleen.utils import file_list, quote_doi, derive_path
 
 log = logging.getLogger(__name__)
 
@@ -46,9 +46,10 @@ def query_solr(solr_url, core, doi, fields=[]):
 
 
 def get_text(core, doi, fields, hash_tags, resume, solr_url, text_dir):
-    prefix, suffix = doi.split('/')
-    text_fname = '#'.join([prefix, suffix] + hash_tags) + '.txt'
-    text_path = Path(text_dir) / text_fname
+    if doi.startswith('http://dx.doi.org/'):
+        doi = doi[18:]
+    quoted_doi = quote_doi(doi)
+    text_path = derive_path('', new_dir=text_dir, new_corename=quoted_doi, new_ext='txt', append_tags=hash_tags)
 
     if resume and text_path.exists() :
         log.info('skipping file {!r} because it exists'.format(text_path))
