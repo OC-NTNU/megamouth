@@ -14,7 +14,7 @@ class DOIError(Exception):
     pass
 
 
-def query_solr(solr_url, core, doi, fields=[]):
+def query_solr(session, solr_url, core, doi, fields=[]):
     url = '/'.join([solr_url.rstrip('/'), core, 'select'])
     params = {'q': 'doi:"' + doi + '"',
               'wt': 'json'}
@@ -22,7 +22,7 @@ def query_solr(solr_url, core, doi, fields=[]):
     if fields:
         params['fl'] = ','.join(f for f in fields)
 
-    response = requests.get(url, params)
+    response = session.get(url, params=params)
     json = response.json()
 
     if json['response']['docs']:
@@ -35,7 +35,7 @@ def query_solr(solr_url, core, doi, fields=[]):
     # So we try again with the url...
     params['q'] = 'doi:"http://dx.doi.org/{}"'.format(doi),
 
-    response = requests.get(url, params)
+    response = session.get(url, params=params)
     json = response.json()
 
     if json['response']['docs']:
@@ -45,7 +45,7 @@ def query_solr(solr_url, core, doi, fields=[]):
     raise DOIError()
 
 
-def get_text(core, doi, fields, hash_tags, resume, solr_url, text_dir):
+def get_text(session, core, doi, fields, hash_tags, resume, solr_url, text_dir):
     if doi.startswith('http://dx.doi.org/'):
         doi = doi[18:]
     quoted_doi = quote_doi(doi)
@@ -54,7 +54,7 @@ def get_text(core, doi, fields, hash_tags, resume, solr_url, text_dir):
     if resume and text_path.exists() :
         log.info('skipping file {!r} because it exists'.format(text_path))
     else:
-        doc = query_solr(solr_url, core, doi, fields)
+        doc = query_solr(session, solr_url, core, doi, fields)
         values = []
         for key in fields:
             try:
@@ -77,25 +77,32 @@ def get_texts(doi_files, solr_url, fields, text_dir, hash_tags=[],
     Path(text_dir).makedirs_p()
     n = 0
 
-    for doi_fname in file_list(doi_files):
-        log.info('getting text sources from {!r}'.format(doi_fname))
-        for line in open(doi_fname):
-            try:
-                core, doi = line.split()
-            except:
-                log.error('ill-formed line in file {!r}:\n'
-                          '{}'.format(doi_fname, line))
-                continue
+    # Use session to deal with the following exception when running many instances in parallel:
+    #
+    # NewConnectionError('<requests.packages.urllib3.connection.HTTPConnection object at 0x7efc8e600668>:
+    # Failed to establish a new connection: [Errno 99] Cannot assign requested address',)
+    #
+    # See http://stackoverflow.com/questions/30943866/requests-cannot-assign-requested-address-out-of-ports
+    with requests.Session() as session:
+        for doi_fname in file_list(doi_files):
+            log.info('getting text sources from {!r}'.format(doi_fname))
+            for line in open(doi_fname):
+                try:
+                    core, doi = line.split()
+                except:
+                    log.error('ill-formed line in file {!r}:\n'
+                              '{}'.format(doi_fname, line))
+                    continue
 
-            try:
-                get_text(core, doi, fields, hash_tags, resume, solr_url, text_dir)
-            except DOIError:
-                continue
+                try:
+                    get_text(session, core, doi, fields, hash_tags, resume, solr_url, text_dir)
+                except DOIError:
+                    continue
 
-            n += 1
-            if n == max_n:
-                log.info('reached max_n={}'.format(n))
-                break
+                n += 1
+                if n == max_n:
+                    log.info('reached max_n={}'.format(n))
+                    break
 
 
 def get_full_text(doi_files, solr_url, text_dir, hash_tags=['full'],
