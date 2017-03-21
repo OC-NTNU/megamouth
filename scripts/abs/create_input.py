@@ -24,6 +24,10 @@ def create_megamouth_input(core, target, query, num_of_batches=1):
     max_batch_size = None
     batch_size = 0
     batch_count = 0
+    dois = set()
+    duplicates = 0
+    no_doi = 0
+    ill_formed = 0
 
     while start <= num_found:
         print('core:{} start:{} end:{}, n:{}'.format(core, start, start + step_size, n))
@@ -49,16 +53,26 @@ def create_megamouth_input(core, target, query, num_of_batches=1):
 
             doi = doc.get('doi')
 
-            if doi.endswith('/null'):
+            if doi in dois:
+                print('WARNING: skipping duplicate DOI ' + doi)
+                duplicates += 1
+            elif not doi:
+                print('WARNING: skipping entry without DOI: {}'.format(doc))
+                no_doi += 1
+            elif doi.endswith('/null'):
                 # filter out http://dx.doi.org/null
                 print('WARNING: skipping ill-formed DOI ' + doi)
-                continue
-
-            outf.write('{}\t{}\n'.format(core, doi))
-            batch_size += 1
-            n += 1
+                ill_formed += 1
+            else:
+                outf.write('{}\t{}\n'.format(core, doi))
+                dois.add(doi)
+                batch_size += 1
+                n += 1
 
         start += step_size
+
+    print('SUMMARY: {}\n#valid DOI: {}\n#duplicate DOI: {}\n#no DOI: {}\n#ill-formed DOI: {}'.format(
+        core, n, duplicates, no_doi, ill_formed))
 
 
 # elsevier abstracts
