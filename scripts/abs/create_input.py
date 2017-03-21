@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 """
 create input for abstracts
 """
