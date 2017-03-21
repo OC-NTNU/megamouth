@@ -45,7 +45,14 @@ def create_megamouth_input(core, target, query, num_of_batches=1):
                 outf = open(out_fname, 'w')
                 batch_size = 0
 
-            outf.write('{}\t{}\n'.format(core, doc.get('doi')))
+            doi = doc.get('doi')
+
+            if doi.endswith('/null'):
+                # filter out http://dx.doi.org/null
+                print('WARNING: skipping ill-formed DOI ' + doi)
+                continue
+
+            outf.write('{}\t{}\n'.format(core, doi))
             batch_size += 1
             n += 1
 
