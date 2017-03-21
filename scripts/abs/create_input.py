@@ -6,14 +6,18 @@ create input for abstracts
 
 
 import requests
-from os import getenv, makedirs
+from os import getenv, makedirs, removedirs
 from math import ceil
+
+from baleen.utils import remove_any
 
 
 def create_megamouth_input(core, target, query, num_of_batches=1):
     url = 'http://ocean.idi.ntnu.no:8983/solr/{}/select'.format(core)
 
     out_dir = '{}/local/inp/{}/{}'.format(getenv('MEGAMOUTH_HOME'), target, core)
+    # remove old files to prevent left-overs
+    remove_any(out_dir)
     makedirs(out_dir, exist_ok=True)
 
     step_size = 1000
