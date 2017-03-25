@@ -10,6 +10,7 @@ log = logging.getLogger(__name__)
 logging.getLogger("requests.packages.urllib3.connectionpool").setLevel(
     logging.WARNING)
 
+
 class DOIError(Exception):
     pass
 
@@ -51,7 +52,7 @@ def get_text(session, core, doi, fields, hash_tags, resume, solr_url, text_dir):
     quoted_doi = quote_doi(doi)
     text_path = derive_path('', new_dir=text_dir, new_corename=quoted_doi, new_ext='txt', append_tags=hash_tags)
 
-    if resume and text_path.exists() :
+    if resume and text_path.exists():
         log.info('skipping file {!r} because it exists'.format(text_path))
     else:
         doc = query_solr(session, solr_url, core, doi, fields)
@@ -89,7 +90,7 @@ def get_texts(doi_files, solr_url, fields, text_dir, hash_tags=[],
             for line in open(doi_fname):
                 try:
                     core, doi = line.split()
-                except:
+                except ValueError:
                     log.error('ill-formed line in file {!r}:\n'
                               '{}'.format(doi_fname, line))
                     continue
@@ -116,6 +117,7 @@ def get_abs_text(doi_files, solr_url, text_dir, hash_tags=['abs'],
     """
     get text of abstracts
 
+    :param max_n:
     :param doi_files:
     :param solr_url:
     :param text_dir:
@@ -127,19 +129,17 @@ def get_abs_text(doi_files, solr_url, text_dir, hash_tags=['abs'],
               hash_tags=hash_tags, resume=resume, max_n=max_n)
 
 
-
-
 def get_solr_sources(xml_files, in_dir):
-    '''
+    """
     Convert output of IR step (article sources in XMl format)
     to Megamouth input files (tab-separated text file where each line contains
     the name of a Solr core and the DOI of a source article).
-    '''
+    """
     in_dir = Path(in_dir)
     in_dir.makedirs_p()
 
     for xml_file in file_list(xml_files):
-        name =  Path(xml_file).name
+        name = Path(xml_file).name
         # arbitrary mapping from filenames to Solr cores
         if name.startswith('elsevier'):
             core = 'oc-elsevier-art'

@@ -16,6 +16,8 @@ script(steps=[
         multi_toneo,
         ppgraph],
     optional=[
+        start_server,
+        stop_server,
         report,
         clean_all],
     default_cfg_fnames=[
