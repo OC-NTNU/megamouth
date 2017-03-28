@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 """
-process Elsevier abstracts 7
+process abs-text corpus, segment Elsevier, part 7
 """
 
 from os import getenv
@@ -38,6 +38,6 @@ script(steps=[get_abs,
                  ppgraph],
        default_cfg_fnames=[
            getenv('MEGAMOUTH_HOME') + '/scripts/megamouth.ini',
-           getenv('MEGAMOUTH_HOME') + '/scripts/local.ini',
-           getenv('MEGAMOUTH_HOME') + '/scripts/abs/elsevier/megamouth-abs-elsevier-7.ini'],
-       default_section='ABS')
+           getenv('MEGAMOUTH_HOME') + '/scripts/abs/megamouth-abs.ini',
+           getenv('MEGAMOUTH_HOME') + '/scripts/abs/elsevier/megamouth-abs-elsevier-7.ini',
+           getenv('MEGAMOUTH_HOME') + '/scripts/local.ini'])

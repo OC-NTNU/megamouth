@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# run all scripts for processing abstracts up till csv
+# run all scripts for processing abs text up till csv
 
 LOGDIR=$MEGAMOUTH_HOME/local/log
 

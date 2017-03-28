@@ -19,9 +19,9 @@ script(steps=[
         start_server,
         stop_server,
         report,
-        clean_all],
+        clean,
+        clean_cache],
     default_cfg_fnames=[
         getenv('MEGAMOUTH_HOME') + '/scripts/megamouth.ini',
-        getenv('MEGAMOUTH_HOME') + '/scripts/local.ini',
-        getenv('MEGAMOUTH_HOME') + '/scripts/abs/megamouth-abs.ini'],
-    default_section='ABS')
+        getenv('MEGAMOUTH_HOME') + '/scripts/abs/megamouth-abs.ini',
+        getenv('MEGAMOUTH_HOME') + '/scripts/local.ini'])
